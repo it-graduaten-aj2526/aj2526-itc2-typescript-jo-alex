@@ -61,9 +61,35 @@ export class PlayersPage {
     }
 
     private validatePlayerName = (): boolean => {
-        return false;
+        const inputPlayer = getElementWrapper<HTMLInputElement>('#input-player');
+        const playerName = inputPlayer.value.trim();
+
+        if (playerName.length === 0) {
+            displayAlert('Please enter a player name');
+            return false;
+        }
+
+        if (quiz.players.some(player => player.name === playerName)) {
+            displayAlert('Player name must be unique');
+            return false;
+        }
+
+        return true;
     }
 
     private addPlayer() {
+        if (!this.validatePlayerName()) {
+            return;
+        }
+
+        const inputPlayer = getElementWrapper<HTMLInputElement>('#input-player');
+        const playerName = inputPlayer.value.trim();
+        quiz.addPlayer(playerName);
+        inputPlayer.value = '';
+        this.updatePlayerList();
+
+        // Knop gaat pas verder zodra alle vereiste spelers zijn toegevoegd.
+        const goToQuestionsButton = getElementWrapper<HTMLButtonElement>('#btn-go-to-questions');
+        goToQuestionsButton.disabled = quiz.players.length !== quiz.getNumberOfPlayers();
     }
 }

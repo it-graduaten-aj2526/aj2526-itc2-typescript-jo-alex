@@ -52,7 +52,26 @@ export class HomePage {
     }
 
     private validateFields = (): boolean => {
-        return false;
+        const inputGameMode = getElementWrapper<HTMLInputElement>('#input-game-mode');
+        const inputAmountQuestions = getElementWrapper<HTMLInputElement>('#input-question-amount');
+        const amountQuestions = parseInt(inputAmountQuestions.value);
+
+        if (inputGameMode.checked) {
+            const inputAmountPlayers = getElementWrapper<HTMLInputElement>('#input-amount-players');
+            const amountPlayers = parseInt(inputAmountPlayers.value);
+
+            if (Number.isNaN(amountPlayers)) {
+                displayAlert('Please enter the amount of players');
+                return false;
+            }
+        }
+
+        if (Number.isNaN(amountQuestions)) {
+            displayAlert('Please enter the amount of questions');
+            return false;
+        }
+
+        return true;
     }
 
     private saveConfiguration = () => {
@@ -72,6 +91,8 @@ export class HomePage {
             amountOfPlayers = parseInt(inputAmountPlayers.value);
         }
 
+        // Reset zorgt voor nieuwe setup met propere quizdata start.
+        quiz.resetGame();
         quiz.setGameMode(gameMode, amountOfPlayers);
         quiz.setQuestionMode(questionMode);
         quiz.quizDuration = amountQuestions;
@@ -80,8 +101,24 @@ export class HomePage {
     }
 
     private toggleQuestionModeLabel = () => {
+        const inputQuestionMode = getElementWrapper<HTMLInputElement>('#input-question-mode');
+        const labelQuestionMode = getElementWrapper<HTMLSpanElement>('#lbl-question-mode');
+        labelQuestionMode.textContent = inputQuestionMode.checked ? 'API questions' : 'Free input';
     }
 
     private toggleGameModeLabel = () => {
+        const inputGameMode = getElementWrapper<HTMLInputElement>('#input-game-mode');
+        const labelGameMode = getElementWrapper<HTMLSpanElement>('#lbl-game-mode');
+        const amountPlayersRow = getElementWrapper<HTMLDivElement>('#rowAmountPlayers');
+
+        // Toggle voor singleplayer en multiplayer.
+        if (inputGameMode.checked) {
+            labelGameMode.textContent = 'Multiplayer';
+            showEl(amountPlayersRow);
+            return;
+        }
+
+        labelGameMode.textContent = 'Single player';
+        hideEl(amountPlayersRow);
     }
 }
