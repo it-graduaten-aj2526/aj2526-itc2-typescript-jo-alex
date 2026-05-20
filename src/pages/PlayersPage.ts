@@ -92,5 +92,5 @@ export class PlayersPage {
         const goToQuestionsButton = getElementWrapper<HTMLButtonElement>('#btn-go-to-questions');
         goToQuestionsButton.disabled = quiz.players.length !== quiz.getNumberOfPlayers();
     }
-
+//Yo
 }
