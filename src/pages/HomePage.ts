@@ -11,6 +11,7 @@ const html: string = `
     </div>
     <div class="row g-3">
         <div class="col-md-12">
+                    
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="input-game-mode" data-testid="input-game-mode"/>
                 <label class="form-check-label" for="input-game-mode"><span

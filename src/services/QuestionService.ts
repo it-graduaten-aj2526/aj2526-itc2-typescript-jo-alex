@@ -1,28 +1,58 @@
 import Question from "../models/Question";
 import { IApiQuestion } from "../types/interfaces/IApiQuestion.ts";
-import { displayAlert } from "../utils";
+import { ICategory } from "../types/interfaces/ICategory.ts";
+import { quiz } from "../globals.ts";
 
 export class QuestionService {
-    baseUrl: string = 'https://opentdb.com/api.php?'
-    categoryUrl: string = 'https://opentdb.com/api_category.php'
+    baseUrl: string = 'https://opentdb.com/api.php?';
+    categoryUrl: string = 'https://opentdb.com/api_category.php';
 
-    constructor() {
+    getCategories = async (): Promise<ICategory[]> => {
+        const response = await fetch(this.categoryUrl);
+        const data = await response.json();
+
+        return data.trivia_categories;
     }
 
-    getCategories = async () => {
-    }
+    getQuestions = async (
+        amount: number,
+        category: number,
+        difficulty: string
+    ): Promise<void> => {
 
-    getQuestions = async (amount: number, category: number, difficulty: string) => {
+        const url =
+            `${this.baseUrl}amount=${amount}&category=${category}&difficulty=${difficulty}&type=multiple`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        const questions = this.mapQuestionsToQuestionModel(data.results);
+
+        questions.forEach(q => {
+            quiz.addQuestion(q);
+        });
     }
 
     mapQuestionsToQuestionModel = (questions: IApiQuestion[]): Question[] => {
 
-        let questionList: Question[] = [];
+        const questionList: Question[] = [];
 
         for (const q of questions) {
+
             const question = new Question(q.question);
-            question.addAnswer({ text: q.correct_answer, isCorrect: true });
-            q.incorrect_answers.forEach(a => question.addAnswer({ text: a, isCorrect: false }));
+
+            question.addAnswer({
+                text: q.correct_answer,
+                isCorrect: true
+            });
+
+            q.incorrect_answers.forEach(a =>
+                question.addAnswer({
+                    text: a,
+                    isCorrect: false
+                })
+            );
+
             questionList.push(question);
         }
 
