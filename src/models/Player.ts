@@ -16,5 +16,4 @@ class Player {
         return `Player: ${this.name} - Score: ${this.score}`;
     }
 }
-
 export default Player;

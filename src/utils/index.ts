@@ -20,7 +20,7 @@ export function disableEl(element: HTMLElement) {
     element.setAttribute('disabled', 'true');
 }
 
-export function displayAlert(message:string, timeout: number = 3000) {
+export function displayAlert(message: string, timeout: number = 3000) {
     const alert = getElementWrapper<HTMLElement>('#alert');
     alert.textContent = message;
     showEl(alert);
