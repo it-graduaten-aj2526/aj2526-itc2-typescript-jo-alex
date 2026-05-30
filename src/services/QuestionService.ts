@@ -1,7 +1,6 @@
 import Question from "../models/Question";
 import { IApiQuestion } from "../types/interfaces/IApiQuestion.ts";
 import { ICategory } from "../types/interfaces/ICategory.ts";
-import { quiz } from "../globals.ts";
 
 export class QuestionService {
     baseUrl: string = 'https://opentdb.com/api.php?';
@@ -18,7 +17,7 @@ export class QuestionService {
         amount: number,
         category: number,
         difficulty: string
-    ): Promise<void> => {
+    ): Promise<Question[]> => {
 
         const url =
             `${this.baseUrl}amount=${amount}&category=${category}&difficulty=${difficulty}&type=multiple`;
@@ -26,11 +25,7 @@ export class QuestionService {
         const response = await fetch(url);
         const data = await response.json();
 
-        const questions = this.mapQuestionsToQuestionModel(data.results);
-
-        questions.forEach(q => {
-            quiz.addQuestion(q);
-        });
+        return this.mapQuestionsToQuestionModel(data.results);
     }
 
     mapQuestionsToQuestionModel = (questions: IApiQuestion[]): Question[] => {

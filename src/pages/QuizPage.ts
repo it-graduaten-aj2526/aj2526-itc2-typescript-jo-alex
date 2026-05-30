@@ -1,5 +1,5 @@
 // language=HTML
-import { getElementWrapper } from "../utils";
+import { displayAlert, getElementWrapper } from "../utils";
 import { quiz, scoreboardPage } from "../globals.ts";
 
 const html: string = `
@@ -46,9 +46,31 @@ export class QuizPage {
     }
 
     private updatePlayerName() {
+        getElementWrapper<HTMLSpanElement>('#current-player-name').textContent = quiz.getCurrentPlayerName();
     }
 
     private submitAnswer() {
+        const selectedAnswer = document.querySelector<HTMLInputElement>('input[name="answer"]:checked');
+
+        if (!selectedAnswer) {
+            displayAlert('Please select an answer');
+            return;
+        }
+
+        // We kennen alleen punten toe wanneer het gekozen antwoord correct is.
+        if (quiz.testIfAnswerIsCorrect(selectedAnswer.value)) {
+            quiz.updateCurrentPlayerScore(1);
+        }
+
+        quiz.nextQuestion();
+
+        if (!quiz.isRunning) {
+            scoreboardPage.init(getElementWrapper('#content'));
+            return;
+        }
+
+        this.updatePlayerName();
+        this.updateCurrentQuestion();
     }
 
     private updateCurrentQuestion() {

@@ -41,6 +41,8 @@ export class PlayersPage {
 
     private updatePlayerList() {
         const playerList = getElementWrapper<HTMLUListElement>("#player-list");
+        const inputPlayer = getElementWrapper<HTMLInputElement>('#input-player');
+        const addPlayerButton = getElementWrapper<HTMLButtonElement>('#btn-add-player');
         // Clear the list
         playerList.innerHTML = "";
         // Set the title
@@ -58,18 +60,25 @@ export class PlayersPage {
             li.textContent = "No players added";
             playerList.appendChild(li);
         }
+
+        // Invoer stopt zodra het ingestelde spelersaantal bereikt is.
+        const hasReachedPlayerLimit = quiz.players.length >= quiz.getNumberOfPlayers();
+        inputPlayer.disabled = hasReachedPlayerLimit;
+        addPlayerButton.disabled = hasReachedPlayerLimit;
     }
 
     private validatePlayerName = (): boolean => {
         const inputPlayer = getElementWrapper<HTMLInputElement>('#input-player');
         const playerName = inputPlayer.value.trim();
+        const normalizedPlayerName = playerName.toLowerCase();
 
         if (playerName.length === 0) {
             displayAlert('Please enter a player name');
             return false;
         }
 
-        if (quiz.players.some(player => player.name === playerName)) {
+        // Namen tellen als dubbel, ongeacht hoofdletters.
+        if (quiz.players.some(player => player.name.trim().toLowerCase() === normalizedPlayerName)) {
             displayAlert('Player name must be unique');
             return false;
         }
@@ -78,6 +87,11 @@ export class PlayersPage {
     }
 
     private addPlayer() {
+        if (quiz.players.length >= quiz.getNumberOfPlayers()) {
+            displayAlert('Player limit has been reached');
+            return;
+        }
+
         if (!this.validatePlayerName()) {
             return;
         }
@@ -92,5 +106,4 @@ export class PlayersPage {
         const goToQuestionsButton = getElementWrapper<HTMLButtonElement>('#btn-go-to-questions');
         goToQuestionsButton.disabled = quiz.players.length !== quiz.getNumberOfPlayers();
     }
-    //Test
 }

@@ -93,7 +93,6 @@ const fillDifficulty = () => {
     const select = getElementWrapper<HTMLSelectElement>("#input-difficulty");
 
     select.innerHTML = `
-        <option value="" disabled selected>Choose difficulty</option>
         <option value="easy">Easy</option>
         <option value="medium">Medium</option>
         <option value="hard">Hard</option>
@@ -102,10 +101,7 @@ const fillDifficulty = () => {
 
 const fillCategories = async () => {
     const select = getElementWrapper<HTMLSelectElement>("#input-category");
-
-    select.innerHTML = `
-        <option value="" disabled selected>Choose theme</option>
-    `;
+    select.innerHTML = '';
 
     const categories = await questionService.getCategories();
 
@@ -141,9 +137,7 @@ export class QuestionsPage {
         getElementWrapper<HTMLSpanElement>('#question-counter').textContent =
             `(${quiz.questions.length}/${quiz.quizDuration})`;
 
-        if (quiz.questions.length >= quiz.quizDuration) {
-            getElementWrapper<HTMLButtonElement>('#btn-start-quiz').disabled = false;
-        }
+        getElementWrapper<HTMLButtonElement>('#btn-start-quiz').disabled = quiz.questions.length < quiz.quizDuration;
     }
 
     private updateCustomQuestionPreview() {
@@ -240,18 +234,26 @@ export class QuestionsPage {
         const difficulty = getElementWrapper<HTMLSelectElement>('#input-difficulty').value;
         const categoryValue = getElementWrapper<HTMLSelectElement>('#input-category').value;
 
-        if (!difficulty || !categoryValue) {
-            displayAlert("Choose difficulty and theme first");
+        if (!difficulty) {
+            displayAlert("Choose difficulty first");
             return;
         }
 
         const category = parseInt(categoryValue);
 
-        await questionService.getQuestions(
+        // Een nieuwe fetch vervangt altijd de vorige API-vragen.
+        quiz.questions = [];
+        this.updateQuestions();
+
+        const questions = await questionService.getQuestions(
             quiz.quizDuration,
             category,
             difficulty as Difficulty
         );
+
+        questions.forEach(question => {
+            quiz.addQuestion(question);
+        });
 
         this.updateQuestions();
     }

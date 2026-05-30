@@ -30,8 +30,21 @@ export class ScoreboardPage {
     }
 
     private restartGame() {
+        // Restart - game terug naar begin en opent nieuwe homepagina.
+        quiz.resetGame();
+        homePage.init(getElementWrapper<HTMLElement>('#content'));
     }
 
     private showScoreboard() {
+        const scoreboard = getElementWrapper<HTMLOListElement>('#scoreboard');
+        scoreboard.innerHTML = '';
+
+        const sortedPlayers = quiz.sortPlayersByScore();
+
+        sortedPlayers.forEach((player) => {
+            const li = document.createElement('li');
+            li.textContent = `${player.name} - ${player.score}`;
+            scoreboard.appendChild(li);
+        });
     }
 }

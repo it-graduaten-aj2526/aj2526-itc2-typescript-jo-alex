@@ -61,8 +61,14 @@ export class HomePage {
             const inputAmountPlayers = getElementWrapper<HTMLInputElement>('#input-amount-players');
             const amountPlayers = parseInt(inputAmountPlayers.value);
 
+            // Multiplayer werkt alleen met minstens 2 spelers.
             if (Number.isNaN(amountPlayers)) {
                 displayAlert('Please enter the amount of players');
+                return false;
+            }
+
+            if (amountPlayers < 2) {
+                displayAlert('Please enter at least 2 players for multiplayer');
                 return false;
             }
         }
@@ -92,7 +98,7 @@ export class HomePage {
             amountOfPlayers = parseInt(inputAmountPlayers.value);
         }
 
-        // Reset zorgt voor nieuwe setup met propere quizdata start.
+        // Reset -> nieuwe setup met propere quizdata start.
         quiz.resetGame();
         quiz.setGameMode(gameMode, amountOfPlayers);
         quiz.setQuestionMode(questionMode);
