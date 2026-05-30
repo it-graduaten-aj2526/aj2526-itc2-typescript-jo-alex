@@ -128,4 +128,5 @@ export class HomePage {
         labelGameMode.textContent = 'Single player';
         hideEl(amountPlayersRow);
     }
+    // Push
 }
